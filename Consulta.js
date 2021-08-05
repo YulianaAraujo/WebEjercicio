@@ -1,4 +1,7 @@
 const mysql = require('mysql')
+const express = require('express')
+const app = express()
+
 
 const conexion = mysql.createConnection({
     host:'localhost',
@@ -9,13 +12,22 @@ const conexion = mysql.createConnection({
 
 conexion.connect((error)=>{
     if(error) throw error
-    console.log('Soy una Conexion y soy muy exitosa!!!')
+    console.log('¡Soy una Conexión y soy muy exitosa!')
 })
 
-conexion.query('SELECT * FROM users',(error, rows)=>{
-    if(error) throw error
-    console.log('hable con la tabla y me dijo que tenia esta info')
-    console.log(rows)
-})
+app.get('/', function(req, resp) {
+    conexion.query('SELECT * FROM users', function(error, rows){
+        if(!!error){
+            console.log('Conexión fallida')
+        }
+        else {
+            console.log('Consulta de la información de la tabla:')
+            console.log(rows)
+            resp.json(rows)
+            conexion.end()
+        }
+});
 
-conexion.end()
+});
+
+app.listen(1337)
